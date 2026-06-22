@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Car, MessageSquare, User, CreditCard, Bell, Shield, LayoutDashboard, LogOut } from 'lucide-react';
 import { getUser, clearUser } from '@/lib/store';
 
@@ -17,16 +17,23 @@ const NAV = [
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [userName, setUserName] = useState('User Name');
   const [userInitial, setUserInitial] = useState('U');
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
 
   useEffect(() => {
     const user = getUser();
-    if (user) {
+    if (!user) {
+      router.push('/login');
+    } else {
       setUserName(user.name || 'User');
       setUserInitial((user.name || 'U')[0].toUpperCase());
+      setIsAuth(true);
     }
-  }, []);
+  }, [router]);
+
+  if (isAuth === null) return null;
 
   const handleSignOut = () => {
     clearUser();

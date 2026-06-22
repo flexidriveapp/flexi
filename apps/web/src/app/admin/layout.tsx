@@ -1,6 +1,7 @@
 'use client';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { LayoutDashboard, Users, Car, Calendar, Shield, IndianRupee, BarChart2, Settings, LogOut, AlertTriangle, MapPin } from 'lucide-react';
 
 const NAV = [
@@ -18,6 +19,20 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isAuth, setIsAuth] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem('flexi_user');
+    if (!userStr) {
+      router.push('/login');
+    } else {
+      setIsAuth(true);
+    }
+  }, [router]);
+
+  if (isAuth === null) return null;
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
       {/* Light sidebar for admin */}
