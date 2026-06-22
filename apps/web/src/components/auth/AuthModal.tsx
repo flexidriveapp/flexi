@@ -792,6 +792,26 @@ export default function AuthModal({ isOpen, onClose, inline = false }: AuthModal
                 <span>Login as Host (Demo)</span>
               </button>
 
+              <button 
+                type="button" 
+                className="modal-google"
+                style={{ marginTop: 12, background: '#1e293b', color: 'white', borderColor: '#1e293b' }}
+                onClick={() => {
+                  localStorage.setItem('flexi_access_token', 'mock_admin_token_' + Date.now());
+                  localStorage.setItem('flexi_user', JSON.stringify({
+                    id: 'mock-admin-user',
+                    name: 'System Admin',
+                    email: 'admin@flexi.com',
+                    role: 'admin',
+                    phone: '0000000000'
+                  }));
+                  onClose();
+                  window.location.href = '/admin';
+                }}
+              >
+                <span>Login as Admin (Demo)</span>
+              </button>
+
               <p className="modal-terms">
                 By continuing, you agree to Flexi's <a href="/terms" className="modal-terms-link">Terms of Service</a> and <a href="/privacy" className="modal-terms-link">Privacy Policy</a>.
               </p>
