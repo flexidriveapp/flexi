@@ -23,15 +23,32 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [isAuth, setIsAuth] = useState<boolean | null>(null);
 
   useEffect(() => {
+    if (pathname === '/admin/login') {
+      setIsAuth(true);
+      return;
+    }
     const userStr = localStorage.getItem('flexi_user');
     if (!userStr) {
-      router.push('/login');
+      router.push('/admin/login');
     } else {
-      setIsAuth(true);
+      try {
+        const user = JSON.parse(userStr);
+        if (user.role !== 'admin') {
+          router.push('/admin/login');
+        } else {
+          setIsAuth(true);
+        }
+      } catch (e) {
+        router.push('/admin/login');
+      }
     }
-  }, [router]);
+  }, [router, pathname]);
 
   if (isAuth === null) return null;
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#f8fafc' }}>
@@ -58,7 +75,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           })}
           <div style={{ height: 1, background: 'var(--border-light)', margin: '8px 0' }} />
           <button style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', borderRadius: 10, fontSize: 14, fontWeight: 600, color: 'var(--accent)', background: 'transparent', border: 'none', cursor: 'pointer', width: '100%', textAlign: 'left' }}
-            onClick={() => { localStorage.clear(); window.location.href = '/'; }}>
+            onClick={() => { localStorage.removeItem('flexi_user'); localStorage.removeItem('flexi_access_token'); window.location.href = '/admin/login'; }}>
             <LogOut size={18} /> Sign Out
           </button>
         </nav>
