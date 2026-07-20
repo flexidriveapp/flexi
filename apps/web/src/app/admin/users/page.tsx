@@ -1,7 +1,18 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { Search, Filter, MoreVertical, Shield, CheckCircle, XCircle } from 'lucide-react';
-import { getAllUsers, type AdminUser } from '@/lib/adminStore';
+import { createClient } from '@/lib/supabase';
+
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'guest' | 'host' | 'admin';
+  createdAt: string;
+  status: 'active' | 'suspended';
+  kycStatus: string;
+}
 
 const KYC_BADGE: Record<string, { label: string; color: string; bg: string }> = {
   verified: { label: 'Verified', color: '#16a34a', bg: '#f0fdf4' },
@@ -16,16 +27,26 @@ export default function AdminUsersPage() {
   const [roleFilter, setRoleFilter] = useState('all');
 
   useEffect(() => {
-    // We combine global users, plus overrides for KYC
-    const baseUsers = getAllUsers();
-    const overrides = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('flexi_admin_kyc_overrides') || '{}') : {};
-    
-    const withOverrides = baseUsers.map(u => ({
-      ...u,
-      kycStatus: overrides[u.id] || overrides[u.email] || u.kycStatus
-    }));
-    
-    setUsers(withOverrides);
+    async function loadUsers() {
+      const supabase = createClient();
+      const { data: profiles } = await supabase.from('profiles').select('*').order('created_at', { ascending: false });
+      const { data: kycRecords } = await supabase.from('kyc_records').select('user_id, status');
+
+      const kycMap: Record<string, string> = {};
+      (kycRecords || []).forEach((k: any) => { kycMap[k.user_id] = k.status; });
+
+      setUsers((profiles || []).map((p: any) => ({
+        id: p.id,
+        name: p.full_name || 'Unknown',
+        email: p.email || '',
+        phone: p.phone || '',
+        role: p.role || 'guest',
+        createdAt: p.created_at,
+        status: 'active',
+        kycStatus: kycMap[p.id] || 'not_submitted',
+      })));
+    }
+    loadUsers();
   }, []);
 
   const filtered = users.filter(u => {

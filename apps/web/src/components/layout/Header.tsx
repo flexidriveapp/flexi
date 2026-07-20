@@ -21,7 +21,7 @@ export default function Header() {
     const onScroll = () => setScrolled(window.scrollY > 10);
     window.addEventListener('scroll', onScroll);
     
-    // Check auth from localStorage for demo
+    // Check auth status
     const stored = localStorage.getItem('flexi_user');
     if (stored) setUser(JSON.parse(stored));
     

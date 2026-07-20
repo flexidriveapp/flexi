@@ -1,7 +1,7 @@
 'use client';
 
 // ===========================================================
-// Flexi Demo Data Store
+// Flexi Client Store
 // Typed localStorage utilities for users, KYC, and bookings.
 // ===========================================================
 
@@ -67,7 +67,6 @@ export interface Booking {
 const KEYS = {
   USER: 'flexi_user',
   TOKEN: 'flexi_access_token',
-  REGISTERED: 'flexi_registered_users',
   KYC: 'flexi_kyc',
   BOOKINGS: 'flexi_bookings',
 } as const;

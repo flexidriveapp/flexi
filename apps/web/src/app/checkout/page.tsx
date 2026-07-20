@@ -275,7 +275,7 @@ function CheckoutContent() {
                 </button>
 
                 <p style={{ fontSize: 11, color: 'var(--text-secondary)', textAlign: 'center', marginTop: 12 }}>
-                  Demo mode: Use any card number. No real charges will be made.
+                  Your payment is secure and encrypted. By paying, you agree to our cancellation policy.
                 </p>
               </div>
             </div>

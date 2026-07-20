@@ -161,11 +161,7 @@ export default function HostBookingsPage() {
                 )}
               </div>
             </div>
-            
-            {/* For DEMO purposes we display the mock OTPs to the user so they can test the flow easily */}
-            <div style={{ width: '100%', background: '#fefce8', padding: '12px 16px', borderRadius: 8, border: '1px solid #fef08a', fontSize: 12, color: '#a16207', display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Clock size={16} /> <strong>Demo Info:</strong> Guest Start OTP: <code>{trip.startOTP}</code> | Guest End OTP: <code>{trip.endOTP}</code>
-            </div>
+
           </div>
         ))}
         {filteredTrips.length === 0 && (

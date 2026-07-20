@@ -27,7 +27,8 @@ export default function HostLayout({ children }: { children: React.ReactNode }) 
     } else {
       const user = JSON.parse(userStr);
       if (user.role !== 'host') {
-        // Technically they should be a host, but for demo we just ensure they are logged in
+        router.push('/login');
+        return;
       }
       setIsAuthenticated(true);
     }

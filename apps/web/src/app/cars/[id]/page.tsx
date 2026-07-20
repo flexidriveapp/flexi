@@ -128,7 +128,7 @@ export default function CarDetailPage({ params }: { params: Promise<{ id: string
     e.preventDefault();
     if (typeof window === 'undefined') return;
     
-    // Check auth status from localStorage directly for demo
+    // Check auth status
     const isLogged = !!localStorage.getItem('flexi_user');
     
     if (!isLogged) {

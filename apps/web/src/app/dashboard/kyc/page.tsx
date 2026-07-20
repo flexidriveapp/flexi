@@ -83,16 +83,7 @@ export default function KYCPage() {
 
     setStatus('pending');
     setStep(3);
-
-    // Auto-verify after 3 seconds (demo simulation)
-    setTimeout(async () => {
-      await supabase.from('kyc_records').update({
-        status: 'verified',
-        verified_at: new Date().toISOString(),
-      }).eq('user_id', userId);
-      setStatus('verified');
-      setSubmitting(false);
-    }, 3000);
+    setSubmitting(false);
   };
 
   return (

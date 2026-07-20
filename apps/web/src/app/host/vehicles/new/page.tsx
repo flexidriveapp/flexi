@@ -361,17 +361,11 @@ export default function AddVehiclePage() {
 
               if (userStr) {
                 const parsedUser = JSON.parse(userStr);
-                if (parsedUser.id?.startsWith('mock-user-') && parsedUser.phone) {
-                  // Fallback: get real UUID from DB
-                  const { data } = await supabase.from('profiles').select('id').eq('phone', parsedUser.phone).single();
-                  if (data) hostId = data.id;
-                } else {
-                  hostId = parsedUser.id;
-                }
+                hostId = parsedUser.id;
               }
 
-              if (!hostId || hostId.startsWith('mock-user-')) {
-                alert('Authentication error. Please log out and log back in to get a valid user ID.');
+              if (!hostId) {
+                alert('Authentication error. Please log out and log back in.');
                 return;
               }
               
