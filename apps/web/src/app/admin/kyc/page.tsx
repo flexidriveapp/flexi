@@ -1,12 +1,14 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Shield, CheckCircle, XCircle, Search, Clock } from 'lucide-react';
+import { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Shield, CheckCircle, XCircle, Search, Clock, FileText } from 'lucide-react';
 import { createClient } from '@/lib/supabase';
 
-export default function AdminKycPage() {
+function KycContent() {
+  const searchParams = useSearchParams();
   const [records, setRecords] = useState<any[]>([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<'pending' | 'all'>('pending');
+  const [searchTerm, setSearchTerm] = useState(searchParams.get('search') || '');
+  const [statusFilter, setStatusFilter] = useState<'pending' | 'all'>(searchParams.get('search') ? 'all' : 'pending');
 
   const load = async () => {
     const supabase = createClient();
@@ -58,9 +60,9 @@ export default function AdminKycPage() {
         <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
           <div style={{ flex: 1, position: 'relative' }}>
             <Search size={18} style={{ position: 'absolute', left: 14, top: 13, color: 'var(--text-secondary)' }} />
-            <input
-              type="text"
-              placeholder="Search by name or email..."
+            <input 
+              type="text" 
+              placeholder="Search by name or email..." 
               value={searchTerm}
               onChange={e => setSearchTerm(e.target.value)}
               style={{ width: '100%', padding: '12px 14px 12px 40px', border: '1px solid var(--border-light)', borderRadius: 10, fontSize: 14, outline: 'none' }}
@@ -74,7 +76,7 @@ export default function AdminKycPage() {
               <CheckCircle size={32} />
             </div>
             <h3 style={{ fontWeight: 700, fontSize: 18, marginBottom: 8 }}>All caught up!</h3>
-            <p style={{ color: 'var(--text-secondary)' }}>There are no {statusFilter === 'pending' ? 'pending ' : ''}KYC requests at the moment.</p>
+            <p style={{ color: 'var(--text-secondary)' }}>There are no {statusFilter === 'pending' ? 'pending ' : ''}KYC requests matching your search.</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
@@ -89,13 +91,18 @@ export default function AdminKycPage() {
                         {(req.profiles?.full_name || 'U')[0].toUpperCase()}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: 16 }}>{req.profiles?.full_name || 'Unknown'}</div>
+                        <div style={{ fontWeight: 700, fontSize: 16 }}>{req.profiles?.full_name || 'Unknown User'}</div>
                         <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>{req.profiles?.email} · {req.profiles?.phone}</div>
                       </div>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                      <span style={{ background: statusBg, color: statusColor, padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 600, textTransform: 'capitalize' }}>{req.status}</span>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>
+                      <span style={{ background: statusBg, color: statusColor, padding: '4px 10px', borderRadius: 999, fontSize: 12, fontWeight: 600, textTransform: 'capitalize', display: 'inline-flex', alignItems: 'center', gap: 6 }}>
+                        {req.status === 'verified' && <CheckCircle size={14} />}
+                        {req.status === 'rejected' && <XCircle size={14} />}
+                        {req.status}
+                      </span>
+                      <div style={{ fontSize: 12, color: 'var(--text-secondary)', display: 'flex', alignItems: 'center', gap: 4 }}>
+                        <Clock size={14} />
                         {new Date(req.submitted_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
                       </div>
                     </div>
@@ -103,21 +110,31 @@ export default function AdminKycPage() {
 
                   {/* Documents summary */}
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: 12, marginBottom: 16 }}>
-                    {Object.entries(req.documents || {}).map(([key, val]) => (
-                      <div key={key} style={{ padding: '10px 14px', background: val ? '#f0fdf4' : '#f8fafc', borderRadius: 8, border: `1px solid ${val ? '#bbf7d0' : 'var(--border-light)'}` }}>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: 4 }}>{key.replace('_', ' ')}</div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: val ? '#16a34a' : 'var(--text-secondary)' }}>{val ? '✓ Uploaded' : 'Missing'}</div>
-                      </div>
-                    ))}
+                    <div style={{ padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: 4 }}>ID Proof</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#16a34a' }}>✓ Uploaded</div>
+                    </div>
+                    <div style={{ padding: '10px 14px', background: '#f0fdf4', borderRadius: 8, border: '1px solid #bbf7d0' }}>
+                      <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', textTransform: 'uppercase', marginBottom: 4 }}>Selfie</div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: '#16a34a' }}>✓ Uploaded</div>
+                    </div>
                   </div>
+                  
+                  {req.document_url && (
+                    <div style={{ marginBottom: 16 }}>
+                      <a href={req.document_url} target="_blank" rel="noreferrer" style={{ fontSize: 13, color: 'var(--primary)', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                        <FileText size={16} /> View Document File
+                      </a>
+                    </div>
+                  )}
 
                   {req.status === 'pending' && (
                     <div style={{ display: 'flex', gap: 12, borderTop: '1px solid var(--border-light)', paddingTop: 16 }}>
                       <button onClick={() => handleAction(req.id, 'verified')} className="btn" style={{ background: '#16a34a', color: 'white', display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px' }}>
-                        <CheckCircle size={16} /> Approve
+                        <CheckCircle size={16} /> Approve KYC
                       </button>
                       <button onClick={() => handleAction(req.id, 'rejected')} className="btn btn-outline" style={{ color: 'var(--accent)', borderColor: '#fda4af', display: 'flex', alignItems: 'center', gap: 6, padding: '8px 16px' }}>
-                        <XCircle size={16} /> Reject
+                        <XCircle size={16} /> Reject KYC
                       </button>
                     </div>
                   )}
@@ -128,5 +145,13 @@ export default function AdminKycPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function AdminKycPage() {
+  return (
+    <Suspense fallback={<div style={{ padding: 40, textAlign: 'center' }}>Loading KYC records...</div>}>
+      <KycContent />
+    </Suspense>
   );
 }
