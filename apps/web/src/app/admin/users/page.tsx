@@ -177,64 +177,71 @@ export default function AdminUsersPage() {
                         {u.status}
                       </span>
                     </td>
-                    <td style={{ padding: '16px', position: 'relative' }}>
-                      <button 
-                        onClick={(e) => { e.stopPropagation(); setActiveMenuId(activeMenuId === u.id ? null : u.id); }}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: 4 }}
-                      >
-                        <MoreVertical size={18} />
-                      </button>
-
-                      {/* Dropdown Menu */}
-                      {activeMenuId === u.id && (
-                        <div 
-                          onClick={e => e.stopPropagation()}
-                          style={{ 
-                            position: 'absolute', right: 30, top: 40, background: 'white', border: '1px solid var(--border-light)', 
-                            borderRadius: 12, boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 100, minWidth: 200, padding: 8
-                          }}
+                    <td style={{ padding: '16px' }}>
+                      <div style={{ position: 'relative' }}>
+                        <button 
+                          onClick={() => setActiveMenuId(activeMenuId === u.id ? null : u.id)}
+                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: 4 }}
                         >
-                          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', padding: '8px 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-                            Account Actions
-                          </div>
-                          
-                          {u.status === 'active' ? (
-                            <button onClick={() => handleUpdateStatus(u.id, 'suspended')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--accent)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#fff1f2'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                              <UserX size={16} /> Suspend User
-                            </button>
-                          ) : (
-                            <button onClick={() => handleUpdateStatus(u.id, 'active')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: '#16a34a', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f0fdf4'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                              <UserCheck size={16} /> Activate User
-                            </button>
-                          )}
+                          <MoreVertical size={18} />
+                        </button>
 
-                          <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
+                        {/* Dropdown Menu */}
+                        {activeMenuId === u.id && (
+                          <>
+                            <div 
+                              style={{ position: 'fixed', inset: 0, zIndex: 90 }} 
+                              onClick={() => setActiveMenuId(null)} 
+                            />
+                            <div 
+                              style={{ 
+                                position: 'absolute', right: 0, top: 30, background: 'white', border: '1px solid var(--border-light)', 
+                                borderRadius: 12, boxShadow: '0 10px 25px rgba(0,0,0,0.1)', zIndex: 100, minWidth: 200, padding: 8
+                              }}
+                            >
+                              <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)', padding: '8px 12px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+                                Account Actions
+                              </div>
+                              
+                              {u.status === 'active' ? (
+                                <button onClick={() => handleUpdateStatus(u.id, 'suspended')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--accent)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#fff1f2'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                  <UserX size={16} /> Suspend User
+                                </button>
+                              ) : (
+                                <button onClick={() => handleUpdateStatus(u.id, 'active')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: '#16a34a', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f0fdf4'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                  <UserCheck size={16} /> Activate User
+                                </button>
+                              )}
 
-                          {u.role !== 'admin' && (
-                            <button onClick={() => handleUpdateRole(u.id, 'admin')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-dark)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                              <ShieldAlert size={16} /> Promote to Admin
-                            </button>
-                          )}
+                              <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
 
-                          {u.role !== 'guest' && (
-                            <button onClick={() => handleUpdateRole(u.id, 'guest')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-dark)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                              <Shield size={16} /> Demote to Guest
-                            </button>
-                          )}
+                              {u.role !== 'admin' && (
+                                <button onClick={() => handleUpdateRole(u.id, 'admin')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-dark)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                  <ShieldAlert size={16} /> Promote to Admin
+                                </button>
+                              )}
 
-                          <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
+                              {u.role !== 'guest' && (
+                                <button onClick={() => handleUpdateRole(u.id, 'guest')} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--text-dark)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left' }} onMouseOver={e => e.currentTarget.style.background = '#f8fafc'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                  <Shield size={16} /> Demote to Guest
+                                </button>
+                              )}
 
-                          <Link href="/admin/kyc" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--primary)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.background = '#eff6ff'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                            <FileText size={16} /> Review KYC
-                          </Link>
+                              <div style={{ height: 1, background: 'var(--border-light)', margin: '4px 0' }} />
 
-                          {u.role === 'host' && (
-                            <Link href="/admin/vehicles" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--primary)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.background = '#eff6ff'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
-                              <Car size={16} /> View Vehicles
-                            </Link>
-                          )}
-                        </div>
-                      )}
+                              <Link href={`/admin/kyc?search=${encodeURIComponent(u.email)}`} style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--primary)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.background = '#eff6ff'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                <FileText size={16} /> Review KYC
+                              </Link>
+
+                              {u.role === 'host' && (
+                                <Link href="/admin/vehicles" style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '10px 12px', border: 'none', background: 'none', cursor: 'pointer', color: 'var(--primary)', fontSize: 14, fontWeight: 500, borderRadius: 6, textAlign: 'left', textDecoration: 'none' }} onMouseOver={e => e.currentTarget.style.background = '#eff6ff'} onMouseOut={e => e.currentTarget.style.background = 'none'}>
+                                  <Car size={16} /> View Vehicles
+                                </Link>
+                              )}
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 );
