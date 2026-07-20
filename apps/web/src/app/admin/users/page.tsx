@@ -178,12 +178,31 @@ export default function AdminUsersPage() {
                       </span>
                     </td>
                     <td style={{ padding: '16px' }}>
-                      <div style={{ position: 'relative' }}>
+                      <div style={{ position: 'relative', display: 'flex', justifyContent: 'flex-end' }}>
                         <button 
-                          onClick={() => setActiveMenuId(activeMenuId === u.id ? null : u.id)}
-                          style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-secondary)', padding: '4px 8px', borderRadius: 4 }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setActiveMenuId(activeMenuId === u.id ? null : u.id);
+                          }}
+                          style={{ 
+                            background: activeMenuId === u.id ? '#e2e8f0' : 'transparent', 
+                            border: 'none', 
+                            cursor: 'pointer', 
+                            color: 'var(--text-dark)', 
+                            padding: '8px', 
+                            borderRadius: '50%',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            zIndex: 10,
+                            position: 'relative',
+                            transition: 'background 0.2s'
+                          }}
+                          onMouseOver={e => e.currentTarget.style.background = '#f1f5f9'}
+                          onMouseOut={e => e.currentTarget.style.background = activeMenuId === u.id ? '#e2e8f0' : 'transparent'}
                         >
-                          <MoreVertical size={18} />
+                          <MoreVertical size={18} style={{ pointerEvents: 'none' }} />
                         </button>
 
                         {/* Dropdown Menu */}
