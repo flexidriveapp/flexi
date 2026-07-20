@@ -61,21 +61,32 @@ export default function AdminUsersPage() {
 
   const handleUpdateStatus = async (userId: string, newStatus: 'active' | 'suspended') => {
     const supabase = createClient();
-    // Assuming profiles table has a 'status' column. If not, this is a placeholder for future implementation
-    await supabase.from('profiles').update({ status: newStatus }).eq('id', userId);
     
     // Optimistic update
+    const previousUsers = [...users];
     setUsers(users.map(u => u.id === userId ? { ...u, status: newStatus } : u));
     setActiveMenuId(null);
+
+    const { error } = await supabase.from('profiles').update({ status: newStatus }).eq('id', userId);
+    if (error) {
+      alert('Failed to update status. Please make sure the database has the status column and RLS policies.');
+      setUsers(previousUsers);
+    }
   };
 
   const handleUpdateRole = async (userId: string, newRole: 'guest' | 'host' | 'admin') => {
     const supabase = createClient();
-    await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
     
     // Optimistic update
+    const previousUsers = [...users];
     setUsers(users.map(u => u.id === userId ? { ...u, role: newRole } : u));
     setActiveMenuId(null);
+
+    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
+    if (error) {
+      alert('Failed to update role. Please ensure you have Admin RLS permissions.');
+      setUsers(previousUsers);
+    }
   };
 
   const filtered = users.filter(u => {
